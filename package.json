@@ -14,7 +14,8 @@
     "archive:publish": "tsx scripts/publish-archive.ts",
     "archive:rotate": "tsx scripts/rotate-archive.ts",
     "archive:check": "tsx scripts/check-public-build.ts",
-    "photos:import": "tsx scripts/photos-import.ts"
+    "photos:import": "tsx scripts/photos-import.ts",
+    "photos:prepare": "tsx scripts/prepare-local-media.ts"
   },
   "dependencies": {
     "hash-wasm": "^4.12.0",
@@ -38,12 +39,12 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "jsdom": "^25.0.1",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.3",
     "tsx": "^4.19.2",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5",
     "vite-plugin-pwa": "^0.21.1",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.10"
   }
 }
