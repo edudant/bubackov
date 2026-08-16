@@ -1,0 +1,13 @@
+{
+  "format": "bubackov-archive-v1",
+  "salt": "2nIqv3gpylnl4hixVebAEg==",
+  "manifest": "2p9cxy6CMWwEtYymXraPqhL2.bin",
+  "manifestContext": "manifest",
+  "kdf": {
+    "algorithm": "argon2id",
+    "iterations": 3,
+    "memorySize": 65536,
+    "parallelism": 1,
+    "hashLength": 32
+  }
+}
