@@ -30,6 +30,21 @@ function useMedia(media: ArchiveMedia | undefined, key: CryptoKey, width: number
   return url;
 }
 
+function GalleryImage({ media, archiveKey }: { media: ArchiveMedia; archiveKey: CryptoKey }) {
+  const url = useMedia(media, archiveKey, 1100);
+  if (!url) return <div className="gallery-placeholder" aria-label="Fotografie se načítá" />;
+  return (
+    <figure className="gallery-item">
+      <img src={url} alt={media.alt} />
+      <figcaption>
+        <span>{media.caption}</span>
+        {media.kind === 'external' && <span>{media.credit} · {media.license}</span>}
+        {media.sourceUrl && <a href={media.sourceUrl} target="_blank" rel="noreferrer">Zdroj <ExternalLink size={12} /></a>}
+      </figcaption>
+    </figure>
+  );
+}
+
 export function StoryReader({ story, archive, archiveKey, tvMode, onBack }: Props) {
   const [index, setIndex] = useState(0);
   const [details, setDetails] = useState(false);
@@ -37,6 +52,11 @@ export function StoryReader({ story, archive, archiveKey, tvMode, onBack }: Prop
   const scroller = useRef<HTMLDivElement>(null);
   const chapter = story.chapters[index];
   const media = useMemo(() => archive.media.find((item) => item.id === chapter?.mediaId), [archive.media, chapter?.mediaId]);
+  const chapterMedia = useMemo(() => {
+    if (!chapter) return [];
+    const ids = [...new Set([chapter.mediaId, ...chapter.mediaIds].filter(Boolean))];
+    return ids.map((id) => archive.media.find((item) => item.id === id)).filter((item): item is ArchiveMedia => Boolean(item));
+  }, [archive.media, chapter]);
   const mediaUrl = useMedia(media, archiveKey, tvMode ? 2200 : 1200);
 
   const goTo = useCallback((next: number) => {
@@ -106,6 +126,7 @@ export function StoryReader({ story, archive, archiveKey, tvMode, onBack }: Prop
                 <button className="detail-button" onClick={() => setDetails(true)} tabIndex={itemIndex === index ? 0 : -1}><Info size={17} /> Celý příběh</button>
               </div>
               {itemMedia?.caption && <p className="photo-caption">{itemMedia.caption}</p>}
+              {item.mediaIds.length > 0 && <button className="gallery-count" onClick={() => setDetails(true)} aria-label={`Otevřít galerii, ${item.mediaIds.length + (item.mediaId ? 1 : 0)} fotografií`}>{item.mediaIds.length + (item.mediaId ? 1 : 0)} fotografií</button>}
             </article>
           );
         })}
@@ -121,6 +142,12 @@ export function StoryReader({ story, archive, archiveKey, tvMode, onBack }: Prop
             <p className="chapter-eyebrow">{chapter.eyebrow}</p>
             <h2 id="detail-title">{chapter.title}</h2>
             {chapter.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            {chapterMedia.length > 0 && (
+              <section className="chapter-gallery" aria-label={`Galerie kapitoly, ${chapterMedia.length} fotografií`}>
+                <div className="gallery-heading"><span>Rodinné album</span><strong>{chapterMedia.length} fotografií</strong></div>
+                {chapterMedia.map((item) => <GalleryImage key={item.id} media={item} archiveKey={archiveKey} />)}
+              </section>
+            )}
             {chapter.quotes.map((item) => (
               <blockquote key={`${item.speaker}-${item.text}`}><Quote size={22} /><p>{item.text}</p><footer>{item.speaker}</footer></blockquote>
             ))}

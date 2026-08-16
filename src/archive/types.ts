@@ -53,6 +53,7 @@ export const chapterSchema = z.object({
   summary: z.string().min(1),
   body: z.array(z.string().min(1)).min(1),
   mediaId: z.string().optional(),
+  mediaIds: z.array(z.string()).default([]),
   quotes: z.array(quoteSchema).default([]),
   facts: z.array(factSchema).default([]),
   tone: z.enum(['amber', 'forest', 'wine', 'night']).default('amber')
@@ -90,6 +91,11 @@ function validateMediaReferences(
     for (const [chapterIndex, chapter] of story.chapters.entries()) {
       if (chapter.mediaId && !mediaIds.has(chapter.mediaId)) {
         context.addIssue({ code: 'custom', path: ['stories', storyIndex, 'chapters', chapterIndex, 'mediaId'], message: 'Neznámé médium.' });
+      }
+      for (const [mediaIndex, mediaId] of chapter.mediaIds.entries()) {
+        if (!mediaIds.has(mediaId)) {
+          context.addIssue({ code: 'custom', path: ['stories', storyIndex, 'chapters', chapterIndex, 'mediaIds', mediaIndex], message: 'Neznámé médium.' });
+        }
       }
     }
   }

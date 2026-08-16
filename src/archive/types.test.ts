@@ -18,4 +18,10 @@ describe('archive validation', () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it('rejects an unknown photograph in a chapter gallery', () => {
+    const withGallery = { ...story, chapters: [{ ...story.chapters[0], mediaIds: ['missing-photo'] }] };
+    const result = privateArchiveSchema.safeParse({ schemaVersion: 1, familyName: 'Rodina', introduction: 'Úvod kroniky', stories: [withGallery], media: [] });
+    expect(result.success).toBe(false);
+  });
 });

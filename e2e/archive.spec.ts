@@ -35,3 +35,14 @@ test('supports TV controls', async ({ page }, testInfo) => {
   await page.keyboard.press('Escape');
   await expect(page.getByText('Čas běží.')).toBeVisible();
 });
+
+test('decrypts a chapter gallery', async ({ page }) => {
+  await page.goto('./');
+  await page.getByLabel('Rodinná přístupová fráze').fill(passphrase!);
+  await page.getByRole('button', { name: 'Odemknout kroniku' }).click();
+  await page.locator('.story-card').first().click();
+  await page.keyboard.press('ArrowRight');
+  await page.getByRole('button', { name: 'Otevřít galerii, 4 fotografií' }).click();
+  await expect(page.getByRole('region', { name: 'Galerie kapitoly, 4 fotografií' })).toBeVisible();
+  await expect(page.locator('.chapter-gallery img')).toHaveCount(4);
+});
