@@ -10,9 +10,11 @@ test('unlocks and opens the main experience', async ({ page }, testInfo) => {
   await page.getByRole('button', { name: 'Odemknout kroniku' }).click();
   if (testInfo.project.name === 'mobile') {
     await expect(page.getByRole('main', { name: 'Rodinná timeline' })).toBeVisible();
-    await expect(page.locator('.feed-card')).toHaveCount(50);
-    await page.mouse.wheel(0, 900);
-    await expect(page.locator('.feed-card').nth(1)).toBeVisible();
+    await expect(page.locator('.social-post')).toHaveCount(8);
+    await page.mouse.wheel(0, 700);
+    await expect(page.locator('.social-post').first()).toBeVisible();
+    await page.locator('.social-post').first().getByRole('button', { name: 'Zobrazit více' }).click();
+    await expect(page.locator('.social-post').first().getByRole('button', { name: 'Zobrazit méně' })).toBeVisible();
     return;
   }
   await expect(page.getByText('Čas běží.')).toBeVisible();
@@ -48,10 +50,14 @@ test('decrypts a chapter gallery', async ({ page }) => {
   await page.getByLabel('Rodinná přístupová fráze').fill(passphrase!);
   await page.getByRole('button', { name: 'Odemknout kroniku' }).click();
   if (page.viewportSize()?.width && page.viewportSize()!.width <= 760) {
-    await expect(page.locator('.feed-photo')).toHaveCount(24);
-    await expect(page.locator('.feed-quote')).toHaveCount(14);
-    await expect(page.locator('.feed-fact')).toHaveCount(3);
-    await expect(page.locator('.feed-source')).toHaveCount(6);
+    await expect(page.locator('.social-gallery')).toHaveCount(5);
+    await expect(page.locator('.social-slide')).toHaveCount(24);
+    await expect(page.locator('.social-memory')).toHaveCount(14);
+    await expect(page.locator('.social-fact')).toHaveCount(3);
+    await expect(page.locator('.social-slide figcaption a, .social-fact a')).toHaveCount(6);
+    const multiPhotoGallery = page.locator('.social-gallery-wrap').filter({ has: page.locator('.social-gallery-meta') }).first();
+    await multiPhotoGallery.locator('.social-gallery').evaluate((element) => element.scrollTo({ left: element.clientWidth }));
+    await expect(multiPhotoGallery.locator('.social-gallery-meta > span').last()).toHaveText('2/4');
     return;
   }
   await page.locator('.story-card').first().click();
