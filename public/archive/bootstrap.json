@@ -1,7 +1,7 @@
 {
   "format": "bubackov-archive-v1",
-  "salt": "7bSGucX7c0BVPlZaR2d8nA==",
-  "manifest": "XwTIklSWdOfa4Ht-CxXWOLtq.bin",
+  "salt": "P/5ympnMy27jTrdG1LOJUg==",
+  "manifest": "dp3_udl7HUiZ7zgkKGtG5F44.bin",
   "manifestContext": "manifest",
   "kdf": {
     "algorithm": "argon2id",

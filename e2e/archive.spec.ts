@@ -10,7 +10,8 @@ test('unlocks and opens the main experience', async ({ page }, testInfo) => {
   await page.getByRole('button', { name: 'Odemknout kroniku' }).click();
   if (testInfo.project.name === 'mobile') {
     await expect(page.getByRole('main', { name: 'Rodinná timeline' })).toBeVisible();
-    await expect(page.locator('.social-post')).toHaveCount(8);
+    await expect(page.locator('.social-post')).toHaveCount(15);
+    await expect(page.locator('.social-route-card')).toHaveCount(3);
     await page.mouse.wheel(0, 700);
     await expect(page.locator('.social-post').first()).toBeVisible();
     await page.locator('.social-post').first().getByRole('button', { name: 'Zobrazit více' }).click();
@@ -50,18 +51,18 @@ test('decrypts a chapter gallery', async ({ page }) => {
   await page.getByLabel('Rodinná přístupová fráze').fill(passphrase!);
   await page.getByRole('button', { name: 'Odemknout kroniku' }).click();
   if (page.viewportSize()?.width && page.viewportSize()!.width <= 760) {
-    await expect(page.locator('.social-gallery')).toHaveCount(5);
-    await expect(page.locator('.social-slide')).toHaveCount(24);
-    await expect(page.locator('.social-memory')).toHaveCount(14);
-    await expect(page.locator('.social-fact')).toHaveCount(3);
-    await expect(page.locator('.social-slide figcaption a, .social-fact a')).toHaveCount(6);
+    await expect(page.locator('.social-gallery')).toHaveCount(9);
+    await expect(page.locator('.social-slide')).toHaveCount(29);
+    await expect(page.locator('.social-memory')).toHaveCount(19);
+    await expect(page.locator('.social-fact')).toHaveCount(9);
+    await expect(page.locator('.social-slide figcaption a, .social-fact a')).toHaveCount(27);
     const multiPhotoGallery = page.locator('.social-gallery-wrap').filter({ has: page.locator('.social-gallery-meta') }).first();
     await multiPhotoGallery.locator('.social-gallery').evaluate((element) => element.scrollTo({ left: element.clientWidth }));
     await expect(multiPhotoGallery.locator('.social-gallery-meta > span').last()).toHaveText('2/4');
     return;
   }
   await page.locator('.story-card').first().click();
-  await page.keyboard.press('ArrowRight');
+  for (let index = 0; index < 6; index += 1) await page.keyboard.press('ArrowRight');
   await page.getByRole('button', { name: 'Otevřít galerii, 4 fotografií' }).click();
   await expect(page.getByRole('region', { name: 'Galerie kapitoly, 4 fotografií' })).toBeVisible();
   await expect(page.locator('.chapter-gallery img')).toHaveCount(4);

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, ExternalLink, Images, LockKeyhole, MapPin, Quote as QuoteIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, ExternalLink, Images, LockKeyhole, MapPin, Quote as QuoteIcon, Route } from 'lucide-react';
 import type { ArchiveManifest, ArchiveMedia, ArchiveStory } from '../archive/types';
 import { loadMediaUrl } from '../archive/load';
 
 type Chapter = ArchiveStory['chapters'][number];
 type Narrator = ArchiveManifest['narrators'][number];
+type RouteCardData = ArchiveStory['routeCards'][number];
 
 function useDecryptedMedia(media: ArchiveMedia | undefined, archiveKey: CryptoKey, active: boolean, width = 1000) {
   const [url, setUrl] = useState<string>();
@@ -202,9 +203,58 @@ function StoryIntro({ story, archive, archiveKey }: { story: ArchiveStory; archi
   );
 }
 
+function RouteCard({ route, number }: { route: RouteCardData; number: number }) {
+  const longitudes = route.stops.map((stop) => stop.longitude);
+  const latitudes = route.stops.map((stop) => stop.latitude);
+  const minLongitude = Math.min(...longitudes);
+  const maxLongitude = Math.max(...longitudes);
+  const minLatitude = Math.min(...latitudes);
+  const maxLatitude = Math.max(...latitudes);
+  const longitudeRange = Math.max(maxLongitude - minLongitude, .25);
+  const latitudeRange = Math.max(maxLatitude - minLatitude, .25);
+  const points = route.stops.map((stop) => ({
+    ...stop,
+    x: 30 + ((stop.longitude - minLongitude) / longitudeRange) * 300,
+    y: 194 - ((stop.latitude - minLatitude) / latitudeRange) * 150
+  }));
+  const path = points.map((point, index) => `${index ? 'L' : 'M'} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(' ');
+
+  return (
+    <article className="social-route-card" aria-label={`Trasa: ${route.title}`}>
+      <header><span><Route size={18} /></span><div><small>Část cesty {number}</small><h2>{route.title}</h2></div></header>
+      <p>{route.summary}</p>
+      <div className="route-map">
+        <svg viewBox="0 0 360 230" role="img" aria-label={route.stops.map((stop) => stop.name).join(', ')}>
+          <defs>
+            <linearGradient id={`route-fill-${route.id}`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#f0e6d8" /><stop offset="1" stopColor="#d8e1d7" /></linearGradient>
+            <filter id={`route-shadow-${route.id}`}><feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity=".2" /></filter>
+          </defs>
+          <rect width="360" height="230" rx="18" fill={`url(#route-fill-${route.id})`} />
+          <path className="route-contour" d="M-10 70 C55 38 92 92 152 62 S260 20 370 58 M-20 178 C42 134 96 188 152 156 S276 120 382 166" />
+          <path className="route-line-back" d={path} />
+          <path className="route-line" d={path} />
+          {points.map((point, index) => {
+            const previous = points[index - 1];
+            const closeToPrevious = previous && Math.abs(point.x - previous.x) < 45;
+            const labelToLeft = point.x > 260 || (index === points.length - 1 && closeToPrevious);
+            return (
+              <g key={`${route.id}-${point.name}`} transform={`translate(${point.x} ${point.y})`} filter={`url(#route-shadow-${route.id})`}>
+                <circle r={index === 0 || index === points.length - 1 ? 7 : 5.5} />
+                <text className={labelToLeft ? 'route-label route-label-end' : 'route-label'} x={labelToLeft ? -10 : 10} y={index % 2 ? 21 : -13}>{point.name}</text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+      <ol>{route.stops.map((stop, index) => <li key={stop.name}><span>{index + 1}</span><div><strong>{stop.name}</strong>{stop.note && <small>{stop.note}</small>}</div></li>)}</ol>
+    </article>
+  );
+}
+
 export function MobileFeed({ archive, archiveKey, onLock }: { archive: ArchiveManifest; archiveKey: CryptoKey; onLock: () => void }) {
   const stories = useMemo(() => [...archive.stories].sort((a, b) => b.sortDate.localeCompare(a.sortDate)), [archive.stories]);
-  const postCount = stories.reduce((count, story) => count + story.chapters.length, 0);
+  const eventCount = stories.reduce((count, story) => count + story.chapters.length, 0);
+  const routeCount = stories.reduce((count, story) => count + story.routeCards.length, 0);
 
   return (
     <div className="mobile-social-shell">
@@ -214,11 +264,17 @@ export function MobileFeed({ archive, archiveKey, onLock }: { archive: ArchiveMa
       </header>
 
       <main className="mobile-social-feed" aria-label="Rodinná timeline">
-        <div className="social-feed-heading"><strong>Naše příběhy</strong><span>{postCount} kapitol</span></div>
+        <div className="social-feed-heading"><strong>Naše příběhy</strong><span>{eventCount} událostí · {routeCount} trasy</span></div>
         {stories.map((story) => (
           <section className="social-story" key={story.id} aria-label={story.title}>
             <StoryIntro story={story} archive={archive} archiveKey={archiveKey} />
-            {story.chapters.map((chapter) => <ChapterPost key={chapter.id} story={story} chapter={chapter} archive={archive} archiveKey={archiveKey} />)}
+            {story.routeCards.filter((route) => !route.afterChapterId).map((route, index) => <RouteCard key={route.id} route={route} number={index + 1} />)}
+            {story.chapters.map((chapter) => (
+              <div className="social-event-group" key={chapter.id}>
+                <ChapterPost story={story} chapter={chapter} archive={archive} archiveKey={archiveKey} />
+                {story.routeCards.filter((route) => route.afterChapterId === chapter.id).map((route) => <RouteCard key={route.id} route={route} number={story.routeCards.indexOf(route) + 1} />)}
+              </div>
+            ))}
           </section>
         ))}
         <footer className="social-feed-end"><span>B</span><strong>Tohle je zatím všechno.</strong><p>Další vzpomínky sem přibudou jako nové příspěvky.</p></footer>

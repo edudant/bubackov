@@ -192,7 +192,8 @@ a { color: inherit; }
 .social-feed-heading { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px 11px; color: #6d5f54; font-size: .76rem; }
 .social-feed-heading strong { color: #352c25; font-size: .92rem; }
 .social-story { display: grid; gap: 10px; }
-.social-story-intro, .social-post { overflow: hidden; border-top: 1px solid rgba(51,42,35,.08); border-bottom: 1px solid rgba(51,42,35,.08); background: #fbfaf8; }
+.social-event-group { display: grid; gap: 10px; }
+.social-story-intro, .social-post, .social-route-card { overflow: hidden; border-top: 1px solid rgba(51,42,35,.08); border-bottom: 1px solid rgba(51,42,35,.08); background: #fbfaf8; }
 .social-story-intro { margin-bottom: 2px; }
 .social-story-cover { position: relative; height: min(64svh, 590px); overflow: hidden; isolation: isolate; background: #211a15; }
 .social-image { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -247,6 +248,27 @@ span.social-avatar { display: grid; place-items: center; font: italic 1rem 'Arch
 .social-fact h3 { margin: 4px 0 6px; font: 600 1.15rem 'Archive Serif', Georgia, serif; }
 .social-fact p { margin: 0 0 9px; color: #685a4e; font-size: .76rem; line-height: 1.48; }
 .social-fact a { display: flex; align-items: center; gap: 5px; width: max-content; max-width: 100%; color: #825233; font-size: .68rem; font-weight: 800; text-decoration: none; }
+.social-route-card { padding: 17px 15px 18px; }
+.social-route-card > header { display: flex; align-items: center; gap: 10px; }
+.social-route-card > header > span { display: grid; width: 40px; height: 40px; border-radius: 50%; place-items: center; color: #fff; background: #315f52; }
+.social-route-card > header div { display: grid; gap: 2px; }
+.social-route-card > header small { color: #8b7d70; font-size: .61rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+.social-route-card h2 { margin: 0; color: #2f2923; font: 600 1.35rem 'Archive Serif', Georgia, serif; }
+.social-route-card > p { margin: 11px 2px 14px; color: #62564b; font-size: .78rem; line-height: 1.5; }
+.route-map { overflow: hidden; border-radius: 17px; background: #e3e2d7; }
+.route-map svg { display: block; width: 100%; height: auto; }
+.route-contour { fill: none; stroke: rgba(66,98,84,.14); stroke-width: 1.2; stroke-dasharray: 3 5; }
+.route-line-back { fill: none; stroke: rgba(255,255,255,.9); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+.route-line { fill: none; stroke: #b4603f; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 7 7; }
+.route-map circle { fill: #315f52; stroke: #fff; stroke-width: 3; }
+.route-label { fill: #3f352d; font: 700 10px Inter, sans-serif; text-anchor: start; paint-order: stroke; stroke: rgba(247,243,236,.95); stroke-width: 4px; stroke-linejoin: round; }
+.route-label-end { text-anchor: end; }
+.social-route-card ol { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin: 14px 0 0; padding: 0; list-style: none; }
+.social-route-card li { display: flex; min-width: 0; align-items: start; gap: 7px; }
+.social-route-card li > span { display: grid; width: 20px; height: 20px; flex: 0 0 auto; border-radius: 50%; place-items: center; color: #fff; background: #315f52; font-size: .59rem; font-weight: 800; }
+.social-route-card li div { display: grid; min-width: 0; gap: 2px; }
+.social-route-card li strong { overflow: hidden; color: #473d34; font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+.social-route-card li small { color: #8d7d70; font-size: .59rem; line-height: 1.35; }
 .social-feed-end { display: grid; justify-items: center; padding: 42px 20px calc(54px + env(safe-area-inset-bottom)); color: #84766b; text-align: center; }
 .social-feed-end > span { display: grid; width: 44px; height: 44px; margin-bottom: 12px; border-radius: 50%; place-items: center; color: #fff; background: #6e4931; font: italic 1.2rem 'Archive Serif', Georgia, serif; }
 .social-feed-end strong { color: #50443a; font: 1.2rem 'Archive Serif', Georgia, serif; }

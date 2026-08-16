@@ -59,6 +59,19 @@ export const chapterSchema = z.object({
   tone: z.enum(['amber', 'forest', 'wine', 'night']).default('amber')
 });
 
+export const routeCardSchema = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  title: z.string().min(1),
+  summary: z.string().min(1),
+  afterChapterId: z.string().optional(),
+  stops: z.array(z.object({
+    name: z.string().min(1),
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+    note: z.string().optional()
+  })).min(2)
+});
+
 export const storySchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   title: z.string().min(1),
@@ -69,6 +82,7 @@ export const storySchema = z.object({
   places: z.array(z.string().min(1)).min(1),
   coverMediaId: z.string().optional(),
   albumUrl: z.string().url().optional(),
+  routeCards: z.array(routeCardSchema).default([]),
   chapters: z.array(chapterSchema).min(1)
 });
 
