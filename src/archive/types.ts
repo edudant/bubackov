@@ -76,6 +76,11 @@ const archiveCoreSchema = z.object({
   schemaVersion: z.literal(1),
   familyName: z.string().min(1),
   introduction: z.string().min(1),
+  narrators: z.array(z.object({
+    name: z.string().min(1),
+    mediaId: z.string().min(1),
+    position: z.string().optional()
+  })).default([]),
   stories: z.array(storySchema).min(1)
 });
 
@@ -84,6 +89,13 @@ function validateMediaReferences(
   context: z.RefinementCtx
 ) {
   const mediaIds = new Set(archive.media.map((media) => media.id));
+  if ('narrators' in archive && Array.isArray(archive.narrators)) {
+    for (const [narratorIndex, narrator] of archive.narrators.entries()) {
+      if (!mediaIds.has(narrator.mediaId)) {
+        context.addIssue({ code: 'custom', path: ['narrators', narratorIndex, 'mediaId'], message: 'Neznámé médium.' });
+      }
+    }
+  }
   for (const [storyIndex, story] of archive.stories.entries()) {
     if (story.coverMediaId && !mediaIds.has(story.coverMediaId)) {
       context.addIssue({ code: 'custom', path: ['stories', storyIndex, 'coverMediaId'], message: 'Neznámé médium.' });

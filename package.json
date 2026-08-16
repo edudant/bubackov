@@ -15,7 +15,8 @@
     "archive:rotate": "tsx scripts/rotate-archive.ts",
     "archive:check": "tsx scripts/check-public-build.ts",
     "photos:import": "tsx scripts/photos-import.ts",
-    "photos:prepare": "tsx scripts/prepare-local-media.ts"
+    "photos:prepare": "tsx scripts/prepare-local-media.ts",
+    "photos:avatars": "tsx scripts/prepare-avatars.ts"
   },
   "dependencies": {
     "hash-wasm": "^4.12.0",
